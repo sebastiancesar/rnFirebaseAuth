@@ -62,3 +62,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# React native
+android/app/google-services.json
+resources/google-services.json

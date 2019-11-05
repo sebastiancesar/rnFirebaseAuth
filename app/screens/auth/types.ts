@@ -1,0 +1,1 @@
+export type KeyboardAvoidingViewOptions = 'height' | 'position' | 'padding' | undefined;
