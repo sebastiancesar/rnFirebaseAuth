@@ -5,6 +5,8 @@ export const ERROR = 'ERROR';
 export const CLEAN_ERROR = 'CLEAN_ERROR';
 
 export const REDIRECT = 'REDIRECT';
+export const REDIRECT_SUCCESS = 'REDIRECT_SUCCESS';
+
 
 export type RedirectParams = {
   routeName: string,
@@ -14,6 +16,10 @@ export type RedirectParams = {
 interface RedirectActionIface {
   type: typeof REDIRECT,
   redirect: RedirectParams
+}
+
+interface RedirectSuccessActionIface {
+  type: typeof REDIRECT_SUCCESS
 }
 
 interface LoadingActionIface {
@@ -31,4 +37,4 @@ interface CleanErrorActionIface {
 }
 
 export type CommonActionTypes = CleanErrorActionIface | LoadingActionIface 
-  | ErrorActionIface | RedirectActionIface;
+  | ErrorActionIface | RedirectActionIface | RedirectSuccessActionIface;

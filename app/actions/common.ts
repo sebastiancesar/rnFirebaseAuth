@@ -1,9 +1,6 @@
-import { LOADING, ERROR, CommonActionTypes, RedirectParams, REDIRECT, CLEAN_ERROR } from './common.types';
+import { LOADING, ERROR, CommonActionTypes, RedirectParams, REDIRECT, CLEAN_ERROR, REDIRECT_SUCCESS } from './common.types';
 import NavigationService from '../services/navigator';
-import { CommonState } from '../reducers/reducers';
-import { AuthState } from '../reducers/reducers.auth';
 import { HandledError } from 'app/services/errorHandling';
-import { getCurrentUser } from './auth';
 
 const TAG: string = 'CommonActions';
 
@@ -26,6 +23,10 @@ export const redirectAction = (redirect: RedirectParams): CommonActionTypes => (
   redirect
 });
 
+export const redirectSuccessAction = (): CommonActionTypes => ({
+  type: REDIRECT_SUCCESS
+});
+
 export const cleanError = (): Function => 
   (dispatch: Function): void => {
     dispatch(cleanErrorAction());
@@ -36,21 +37,9 @@ export const onHandledError = (handledError: HandledError): Function =>
     dispatch(handledErrorAction(handledError));
 }
 
-export const cleanPendingRedirects = (dispatch: Function, getState: Function): void => {
-  const { redirect } = getState().common as CommonState;
-  if (redirect) {
-    console.log(TAG, ' > cleanPendingRedirect ', redirect)
-    NavigationService.navigate(redirect.routeName, redirect.params);
-    dispatch(redirectAction(null));
-  }
-}
-
 export const redirect = (redirect: RedirectParams): Function =>
-  (dispatch: Function, getState:Function ) => {
-    const hasUser = getCurrentUser(getState);
+  (dispatch: Function) => {
     dispatch(redirectAction(redirect))
-    if (hasUser) {
-      NavigationService.navigate(redirect.routeName, redirect.params);
-      dispatch(redirectAction(null));
-    } 
+    NavigationService.navigate(redirect.routeName, redirect.params);
+    dispatch(redirectSuccessAction());
   }

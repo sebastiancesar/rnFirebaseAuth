@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import PhoneAuthScreen from './app/screens/auth/Phone';
 import CodeVerificationScreen from './app/screens/auth/CodeVerification';
 import HomeScreen from './app/screens/home/Home';
+import UserHome from './app/screens/home/UserHome';
 import NavigationService from './app/services/navigator';
 import store from './app/reducers/store';
 import withDeeplinkHandling from './app/modules/common/withDeeplinkHandling';
@@ -16,8 +17,10 @@ const uriPrefix = ' ';
 console.disableYellowBox = true;
 
 
-const TabNavigator = createBottomTabNavigator({
-    Home: HomeScreen
+const TabNavigator = createBottomTabNavigator(
+  {
+    Home: HomeScreen,
+    UserHome: UserHome
   }
 );
 

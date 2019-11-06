@@ -1,16 +1,15 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import AuthService from '../services/auth';
-import { onHandledError, cleanPendingRedirects, cleanError } from '../actions/common';
+import { onHandledError, cleanError } from '../actions/common';
 import { VALID_PHONE_NUMBER, SIGNIN, SAVE_USER, SIGNOUT, 
   AuthActionsTypes, VERIFICATION_ID, VERIFIED_CODE, VERIFYING_CODE, 
-  VALID_VERIFICATION_CODE, SIGNIN_RESET, WAITING_FOR_AUTH } from './auth.types';
+  VALID_VERIFICATION_CODE, SIGNIN_RESET, WAITING_FOR_AUTH, INVALID_VERIFICATION_CODE, INVALID_PHONE_NUMBER } from './auth.types';
 import NavigationService from '../services/navigator';
 import { HandledError } from '../services/errorHandling';
-import { AuthState } from 'app/reducers/reducers.auth';
 
 const TAG: string = 'AuthActions';
 
-export const persistUserAction = (user: any): AuthActionsTypes => ({
+export const saveUserAction = (user: any): AuthActionsTypes => ({
   type: SAVE_USER,
   user
 });
@@ -29,9 +28,17 @@ export const validPhoneNumberAction = (phoneNumber: string): AuthActionsTypes =>
   phoneNumber: phoneNumber
 });
 
+export const invalidPhoneNumberAction = (): AuthActionsTypes => ({
+  type: INVALID_PHONE_NUMBER
+});
+
 export const validVerificationCodeAction = (verificationCode: string): AuthActionsTypes => ({
   type: VALID_VERIFICATION_CODE,
   verificationCode: verificationCode
+});
+
+export const invalidVerificationCodeAction = (): AuthActionsTypes => ({
+  type: INVALID_VERIFICATION_CODE
 });
 
 export const verificationIdAction = (verificationId: string): AuthActionsTypes => ({
@@ -58,20 +65,19 @@ export const waitingForAuth = (loading: boolean): AuthActionsTypes => ({
   loading: loading
 });
 
+
 export const loadAuthUser = ():Function => 
-  (dispatch: Function, getState: Function): void => {
+  (dispatch: Function) => {
     dispatch(waitingForAuth(true));
-    AuthService.onAuthStateChanged((loggedUser: any) => {
-      console.log(TAG, ' loadAuthUser > authStateChanged ', loggedUser);
-      const hasUser = getCurrentUser(getState);
-      if (loggedUser && !hasUser) {
-        dispatch(persistUser(loggedUser));
-        // follow pending request in case of deeplinks
-        cleanPendingRedirects(dispatch, getState);
-      } else if (!loggedUser && !hasUser ) {
-        signOut()(dispatch);
-      }
-    });
+    AuthService.onAuthStateChanged()    
+      .then((loggedUser) => {
+        console.log(TAG, ' loadAuthUser > authStateChanged ', loggedUser);
+        if (loggedUser) {
+          dispatch(saveUser(loggedUser));
+        } else {
+          dispatch(signOut());
+        }
+      });
 }
 
 export const signOut = ():Function => (dispatch: Function): Promise<void> => 
@@ -89,16 +95,6 @@ export const signInReset = (): Function =>
     NavigationService.navigate('Auth');
   }
 
-export const validPhoneNumber = (phoneNumber: string): Function => 
-  (dispatch: Function): void => {
-    dispatch(validPhoneNumberAction(phoneNumber));
-  }
-
-export const validVerificationCode = (verificationCode: string): Function => 
-  (dispatch: Function): void => {
-    dispatch(validVerificationCodeAction(verificationCode));
-  }
-
 export const onSmsSent = (verificationResponse: any): Function => 
   (dispatch: Function): void => {
     dispatch(verificationIdAction(verificationResponse.verificationId));
@@ -108,7 +104,8 @@ export const onSmsSent = (verificationResponse: any): Function =>
 export const onVerified = (user: any): Function => 
   (dispatch: Function): void => {
     dispatch(verifiedCodeAction(true));
-    dispatch(persistUser(user))
+    dispatch(cleanError());
+    dispatch(saveUser(user))
       .then(() => {
         NavigationService.navigate('Home');
       });
@@ -148,19 +145,13 @@ export const confirmVerificationCode =
         });
     }
 
-export const persistUser = 
+const saveUser = 
   (user: any): Function => (dispatch: Function): Promise<any> => 
     AsyncStorage.setItem('user', JSON.stringify(user))
       .then(() => {
-        dispatch(cleanError());
-        dispatch(persistUserAction(user));
+        dispatch(saveUserAction(user));
         return user;
       })
       .catch( err => {
         dispatch(onHandledError(err));
       });
-
-export const getCurrentUser = (getState: Function): any => {
-  const user:any = (getState().auth as AuthState).user;
-  return user && user.uid;
-}

@@ -1,5 +1,5 @@
 import { combineReducers }  from 'redux';
-import { LOADING, ERROR, CommonActionTypes, REDIRECT, RedirectParams, CLEAN_ERROR } from '../actions/common.types';
+import { LOADING, ERROR, CommonActionTypes, REDIRECT, RedirectParams, CLEAN_ERROR, REDIRECT_SUCCESS } from '../actions/common.types';
 import { authReducer, AuthState } from './reducers.auth';
 import { HandledError } from 'app/services/errorHandling';
 
@@ -25,7 +25,9 @@ const commonReducer = (state: CommonState = commonInitialState(),
   action: CommonActionTypes) => {
     switch(action.type) {
       case REDIRECT:
-        return { ...state, redirect: action.redirect }
+        return { ...state, redirect: action.redirect };
+      case REDIRECT_SUCCESS:
+        return { ...state, redirect: null };
       case LOADING:
         return {...state, loading: action.isLoading };
       case ERROR:

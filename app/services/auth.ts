@@ -1,5 +1,6 @@
 import firebase from 'react-native-firebase';
 import ErrorHandlingService from './errorHandling';
+import { Falsy } from 'react-native';
 
 const TAG: string = 'AuthService';
 // TODO not working. The call ignore this number.
@@ -15,8 +16,12 @@ class AuthService {
       })
   }
 
-  static onAuthStateChanged(listener) {
-    return firebase.auth().onAuthStateChanged(listener);
+  static onAuthStateChanged(): Promise<any> {
+    return new Promise((resolve) => {
+      firebase.auth().onAuthStateChanged((loggedUser: any) => {
+        resolve(loggedUser);
+      });
+    })
   }
 
   static isValidConfirmationCode(code: string) {

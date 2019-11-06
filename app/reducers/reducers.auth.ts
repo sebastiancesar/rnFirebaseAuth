@@ -1,7 +1,9 @@
 import { AuthActionsTypes, VERIFICATION_ID, SIGNIN, 
   SAVE_USER, SIGNOUT, VALID_PHONE_NUMBER, 
   VALID_VERIFICATION_CODE, 
-  SIGNIN_RESET} from '../actions/auth.types';
+  SIGNIN_RESET,
+  INVALID_VERIFICATION_CODE,
+  INVALID_PHONE_NUMBER} from '../actions/auth.types';
 
 export type AuthState = {
   user: object,
@@ -42,11 +44,25 @@ export const authReducer = (state: AuthState = initialState(),
             phoneNumber: action.phoneNumber 
           }
         };
+      case INVALID_PHONE_NUMBER:
+        return { ...state,
+          login: {
+            ...state.login,
+            phoneNumber: null 
+          }
+        };
       case VALID_VERIFICATION_CODE:
         return { ...state,
           login: {
             ...state.login,
             verificationCode: action.verificationCode 
+          }
+        };
+      case INVALID_VERIFICATION_CODE:
+        return { ...state,
+          login: {
+            ...state.login,
+            verificationCode: null 
           }
         };
       case SIGNIN:

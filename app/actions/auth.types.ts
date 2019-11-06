@@ -6,7 +6,9 @@ export const VERIFICATION_ID = 'VERIFICATION_ID';
 export const VERIFIED_CODE = 'VERIFIED_CODE';
 export const VERIFYING_CODE = 'VERIFYING_CODE';
 export const VALID_PHONE_NUMBER = 'VALID_PHONE_NUMBER'; 
+export const INVALID_PHONE_NUMBER = 'INVALID_PHONE_NUMBER';
 export const VALID_VERIFICATION_CODE = 'VALID_VERIFICATION_CODE'; 
+export const INVALID_VERIFICATION_CODE = 'INVALID_VERIFICATION_CODE'; 
 export const WAITING_FOR_AUTH = 'WAITING_FOR_AUTH'; 
 
 
@@ -52,12 +54,20 @@ interface ValidPhoneNumberActionIface {
   phoneNumber: string
 }
 
+interface InvalidPhoneNumberActionIface {
+  type: typeof INVALID_PHONE_NUMBER,
+}
 interface ValidVerificationCodeActionIface {
   type: typeof VALID_VERIFICATION_CODE
   verificationCode: string
 }
 
+interface InvalidVerificationCodeActionIface {
+  type: typeof INVALID_VERIFICATION_CODE
+}
+
 export type AuthActionsTypes = | SaveUserActionIface | SignOutActionIface 
   | SignInActionIface | VerificationIdActionIface | VerifiedCodeActionIface 
   | VerifyingCodeActionIface | ValidPhoneNumberActionIface | WaitingAuthUserActionIface
-  | ValidVerificationCodeActionIface | SignInResetActionIface;
+  | ValidVerificationCodeActionIface | SignInResetActionIface 
+  | InvalidVerificationCodeActionIface | InvalidPhoneNumberActionIface;

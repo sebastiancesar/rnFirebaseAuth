@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import PhoneInput from './PhoneInput';
 import { AppState } from '../../reducers/reducers';
-import { validPhoneNumber } from '../../actions/auth';
+import { validPhoneNumberAction, invalidPhoneNumberAction } from '../../actions/auth';
 import { connect } from 'react-redux';
 
 interface FormProps {
   validPhoneNumber: (phoneNumber: string) => void,
+  invalidPhoneNumber: () => void,
   phoneNumber: string
 };
 
@@ -27,7 +28,7 @@ class PhoneSignInForm extends Component<FormProps, FormState> {
     if (status.validPhoneNumber) {
       this.props.validPhoneNumber(status.phoneNumber);
     } else if (!status.validPhoneNumber && this.props.phoneNumber) {
-      this.props.validPhoneNumber(null);
+      this.props.invalidPhoneNumber();
     }
   }
 
@@ -45,7 +46,9 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchProps = (dispatch: Function) => ({
-  validPhoneNumber: (phoneNumber: string) => dispatch(validPhoneNumber(phoneNumber))
+  validPhoneNumber: (phoneNumber: string) => 
+    dispatch(validPhoneNumberAction(phoneNumber)),
+  invalidPhoneNumber: () => dispatch(invalidPhoneNumberAction())
 });
 
 export default connect(mapStateToProps, mapDispatchProps)(PhoneSignInForm);

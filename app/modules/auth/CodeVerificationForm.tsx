@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import CodeVerificationInput from "./CodeVerificationInput";
 import { View } from 'react-native';
-import { validVerificationCode } from "../../actions/auth";
+import { invalidVerificationCodeAction, validVerificationCodeAction } from "../../actions/auth";
 import { connect } from 'react-redux';
 
 interface Props {
   verificationCode: string,
-  validVerificationCode: (verificationCode: string) => void
+  validVerificationCode: (verificationCode: string) => void,
+  invalidVerificationCode: () => void
 }
 
 class CodeVerificationForm extends Component<Props> {
@@ -20,7 +21,7 @@ class CodeVerificationForm extends Component<Props> {
     if (status.validConfirmationCode && this.props.verificationCode === null) {
       this.props.validVerificationCode(status.codeInput);
     } else if (!status.validConfirmationCode && this.props.verificationCode) {
-      this.props.validVerificationCode(null);
+      this.props.invalidVerificationCode();
     }
   }
 
@@ -35,7 +36,8 @@ class CodeVerificationForm extends Component<Props> {
 
 const mapDispatchProps = (dispatch: Function) => ({
   validVerificationCode: (verificationCode: string) => 
-    dispatch(validVerificationCode(verificationCode)),
+    dispatch(validVerificationCodeAction(verificationCode)),
+  invalidVerificationCode: () => dispatch(invalidVerificationCodeAction())
 });
 
 export default connect(null, mapDispatchProps)(CodeVerificationForm);
